@@ -21,11 +21,12 @@ const rootReducer = (state = initState, action) => {
             user.mail = type.mail
             user.username = type.username
             user.password = type.password
+            user.age = type.age
+            user.department = type.department
         }
         
         if (action.type === 'PROFIL') {
             user.age = type.age
-            user.mail = type.mail
             user.department = type.department
         }
 

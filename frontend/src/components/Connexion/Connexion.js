@@ -63,22 +63,29 @@ class Connexion extends Component {
                 const loginStatus = response.data.message
                 this.setState({ loginStatus })
             } else {
+
                 const user = {
                     id: response.data[0].id,
                     mail: response.data[0].mail,
                     username: response.data[0].username,
-                    password: response.data[0].password
+                    password: response.data[0].password,
+                    age: response.data[0].age,
+                    department: response.data[0].department,
+                    profilimage: response.data[0].profilimage
                 }
 
                 this.props.addusers(user)
 
-                this.setState({ loginStatus: user.username })
                 this.setState({ goToHome: true })
             }
         })
     }
-        
 
+    getProfil = () => {
+        Axios.post(`http://localhost:3001/getProfil/${this.state.id}`).then((response) => {
+            console.log(response)
+        })
+    }
 
     render() {
 

@@ -17,7 +17,7 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(helmet())
 // Sanitize Middleware (Inyection Attacks)
-app.use(sanitizeMiddleware());
+app.use(sanitizeMiddleware())
 app.use(xss())
 
 const limiter = rateLimit({
@@ -37,12 +37,14 @@ app.use(function (req, res, next) {
 
 const register = require('./routes-user/register');
 const login = require('./routes-user/login');
+const updateProfil = require('./routes-user/updateProfil');
 
 // Gestion de la ressource image en statique
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/Register', register);
 app.use('/login', login);
+app.use('/updateProfil', updateProfil);
 
 
 // Error Handling 404

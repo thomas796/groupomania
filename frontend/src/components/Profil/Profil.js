@@ -10,7 +10,6 @@ class Profil extends Component {
         id: 0,
         username: 'anonyme',
         age: '',
-        mail: '',
         department: '',
         selectedFile: null,
         goToHome: false
@@ -21,22 +20,19 @@ class Profil extends Component {
         this.setState({ username: user.username })
         this.setState({ id: user.id })
         this.setState({ age: user.age })
-        this.setState({ mail: user.mail })
         this.setState({ department: user.department })
     }
 
     confirmProfil = () => {
 
-        Axios.put('http://localhost:3001/profil/', {
+        Axios.put('http://localhost:3001/updateProfil/', {
             id: this.state.id,
             age: this.state.age,
-            mail: this.state.mail,
             department: this.state.department
         }).then(() => {
 
             const user = {
                 age: this.state.age,
-                mail: this.state.mail,
                 department: this.state.department
             }
     
@@ -49,11 +45,6 @@ class Profil extends Component {
     handleAge = (e) => {
         const age = e.target.value
         this.setState({ age })
-    }
-
-    handleMail = (e) => {
-        const mail = e.target.value
-        this.setState({ mail })
     }
 
     handleDepartment = (e) => {
@@ -85,8 +76,6 @@ class Profil extends Component {
             <h1 className='title'>Profil de {this.state.username}</h1>
             <h3>Age</h3>
             <input type="text" value={this.state.age} placeholder="33" onChange={this.handleAge} />
-            <h3>Adresse mail</h3>
-            <input type="text" value={this.state.mail} placeholder="nom@gmail.com" onChange={this.handleMail} />
             <h3>Service</h3>
             <input type="text" value={this.state.department} placeholder="RH" onChange={this.handleDepartment} />
             <h3>Photo de profil</h3>

@@ -90,6 +90,38 @@ exports.login = (req, res, next) => {
     })
 }
 
+
+//update profil
+exports.updateProfil = (req, res, next) => {
+    const id = req.body.id
+    const age = req.body.age
+    const department = req.body.department
+
+    const sqlUpdate = "UPDATE users SET age = ?, department = ? WHERE id = ?;";
+
+    db.query(sqlUpdate, [age, department, id], (err, result) => {
+        if (result) {
+            res.send(result)
+        } 
+        if (err) {
+            res.send(err)
+        }
+    })
+}
+
+
+
+
+// app.get('/user/:id', (req, res) => {
+//     const id = req.params.id
+//     const sqlSelect = "SELECT * FROM users WHERE id = ?;"
+
+//     db.query(sqlSelect, [6], (err, result) => {
+//         res.send(result)
+//     })
+// })
+
+
 //     User.findOne({ email: req.body.email })
 //       .then(user => {
 //         if (!user) {
