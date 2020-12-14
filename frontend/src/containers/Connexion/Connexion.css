@@ -1,0 +1,73 @@
+#container {
+  margin: 0px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+}
+.registration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(230, 216, 216, 0.61);
+    width: 300px;
+    height: 370px;
+    border-radius: 10px;
+    margin: 20px;
+  }
+  
+  #login {
+    height: 100px;
+    background-color: royalblue;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  
+  input {
+    height: 30px;
+    margin: 10px;
+    width: 200px;
+  }
+  
+  button {
+    width: 180px;
+    background-color: rgb(48, 95, 235);
+    color: white;
+    border-radius: 5px;
+    font-size: futura arial;
+  }
+
+  #main {
+    background-image: url('../../img/homePicture.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    height: calc(100% - 100px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  #groupomania {
+    position: absolute;
+    left: 20px;
+    margin: 0px;
+    top: 32px;
+    width: 200px;
+    height: 36px;
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  @media all and (max-width: 900px) {
+    #groupomania {
+        display: none;
+      }
+    
+  }

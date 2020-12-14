@@ -1,53 +1,33 @@
-import React, { Component, Fragment } from 'react'
-import { Redirect } from 'react-router-dom'
-// import Axios from 'axios';
-import './App.css';
-import { connect } from 'react-redux'
+import React from 'react'
+import './App.css'
+import { Route, Switch } from 'react-router-dom'
 
-class App extends Component {
+//containers
+import Home from './containers/Home/Home'
+import Connexion from './containers/Connexion/Connexion'
+import UpdateProfil from './containers/UpdateProfil/UpdateProfil'
 
-  state = {
-    username: '',
-    goToProfil: false,
-  }
+const App = () => {
+  
 
-  componentDidMount () {
+  let routes;
 
-    const { user } = this.props;
-    this.setState({ username: user.username })
 
-    // Axios.get(`http://localhost:3001/user/${user.id}`).then((response) => {
-    //     this.setState({ user: response.data[0].username })
-    // })
+  routes = (
+    <Switch>
+        <Route exact path='/' component={Connexion} />
+        <Route exact path='/profil' component={UpdateProfil} />
+        <Route exact path='/home' component={Home} />
+    </Switch>
+  )
+  
 
-  }
-
-  handleGoToProfil = () => {
-    this.setState({ goToProfil: true })
-  }
-
-  render() {
-
-    if (this.state.goToProfil) {
-        return <Redirect push to={`/profil`} />
-    }
-
-    return (
-      <Fragment>
-        <div className="conteneur">
-        <h1>Bienvenue {this.state.username}</h1>
-          <p>Groupomania, un réseau social</p>
-          <button onClick={this.handleGoToProfil}>Ajouter un profil</button>
-        </div>
-      </Fragment>
-    )
-  }
+  return (
+        routes
+  );
+  
 }
 
-const mapStateToProps = state => {
-  return {
-    user: state.user
-  }
-}
 
-export default connect(mapStateToProps)(App);
+
+export default (App);

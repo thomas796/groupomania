@@ -1,7 +1,6 @@
 const express = require("express")
 const bodyParser = require('body-parser')
 const cors = require("cors")
-const multer = require ('multer')
 const path = require('path')
 const helmet = require('helmet')
 const xss = require('xss-clean')
@@ -22,7 +21,7 @@ app.use(xss())
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 
+  max: 1000 
 });
 
 app.use(limiter);
@@ -35,17 +34,29 @@ app.use(function (req, res, next) {
     }
 });
 
+
 const register = require('./routes-user/register');
 const login = require('./routes-user/login');
 const updateProfil = require('./routes-user/updateProfil');
+const getProfil = require('./routes-user/getProfil');
 
 // Gestion de la ressource image en statique
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use('/Register', register);
+app.use('/register', register);
 app.use('/login', login);
 app.use('/updateProfil', updateProfil);
+app.use('/getProfil', getProfil);
 
+const addPost = require('./routes-posts/addPost')
+const getPost = require('./routes-posts/getPost')
+const addComment = require('./routes-comments/addComment')
+const getComments = require('./routes-comments/getComments')
+
+app.use('/addPost', addPost);
+app.use('/getPost', getPost);
+app.use('/addComment', addComment);
+app.use('/getComments', getComments);
 
 // Error Handling 404
 app.use((req, res, next) => {

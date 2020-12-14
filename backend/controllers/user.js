@@ -2,6 +2,8 @@ const mysql = require("mysql");
 
 // Database Route
 const db = require("../config_db");
+const validator = require("validator");
+const regExText = /^[A-ZÀÂÆÇÉÈÊËÏÎÔŒÙÛÜŸ \'\- ]+$/i;
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -26,41 +28,55 @@ passwordSchema
 
 // Sign up
 exports.register = (req, res, next) => {
-
-    console.log('one')
+   
     const username = req.body.username
     const mail = req.body.mail
     const password = req.body.password
 
-    if (validatorEmail.validate(mail)) {
-        console.log('two')
-        if (passwordSchema.validate(password)) {
-            console.log('three')
-      //  bcrypt.hash(password, 10, (error, hash) => {
+    if (validator.matches(String(username), regExText)) {
+        if (validatorEmail.validate(mail)) {
+            if (passwordSchema.validate(password)) {
 
-            const sqlInsert = "INSERT INTO users (username, mail, password) VALUES (?,?,?);"
+                 const sqlSelect = "SELECT * FROM users WHERE mail = ?;"
 
-            db.query(sqlInsert, [username, mail, password], (err, result) => {
-                console.log('profil créé')
+                 //on check si les utilisateurs sont déjà créé
+                 db.query(sqlSelect, [mail], (err, result) => {
+           
+                    if (result.length === 0) {
 
-                if (err) {
-                    res.send({ err: err})
-                    console.log('erreur, profil non créé')
+                       bcrypt.hash(req.body.password, 10).then(hash => {
+       
+                        const sqlInsert = "INSERT INTO users (username, mail, password) VALUES (?,?,?);"
+       
+                        db.query(sqlInsert, [username, mail, hash], (err) => {
+
+                            if (err) {
+                                res.send({ err: err})
+                            } else {
+                                res.send({ message: "profil is created" })
+                            }
+                        })
+                       }).catch(error => res.status(500).json({ error }))
+
+                    } else {
+                        const error = 'email déjà existant';
+                        res.send({ message: "l'adresse mail est déjà utilisée" })
+                    }
+                 })
+
                 } else {
-                    res.send({ message: "profil is created" })
-                }
-            })
-       // }).catch(error => res.status(500).json({ error }))
+                    const error = 'invalide password';
+                    res.status(400).json({ error })
+            }
+        } else {
+            const error = 'invalide email';
+            res.status(600).json({ error })
+        }
     } else {
-        const error = 'invalide password';
-        res.status(400).json({ error })
-      }
-    } else {
-        const error = 'invalide email';
-        res.status(600).json({ error })
+        const error = 'invalide username';
+        res.status(700).json({ error })
     }
 }
-
 
 
 
@@ -68,38 +84,70 @@ exports.register = (req, res, next) => {
 exports.login = (req, res, next) => {
 
     const mail = req.body.mail
-    const password = req.body.password
 
-    const sqlSelect = "SELECT * FROM users WHERE mail = ? AND password = ?;"
+    const sqlSelect = "SELECT * FROM users WHERE mail = ?";
 
-    db.query(sqlSelect, [mail, password], (err, result) => {
+    db.query(sqlSelect, [mail], (err, user) => {
         
-        console.log('login')
         if (err) {
             res.send({ err: err})
-            console.log('err')
         }
-        
-        if (result.length > 0) {
-            console.log('result')
-            res.send(result)
-        } else {
-            console.log('message')
-            res.send({ message: "Wrong mail/password combination !"})
+
+        if (user.length === 0) {
+            res.send({ message: "Votre adresse email est invalide !"})
         }
+  
+        bcrypt.compare(req.body.password, user[0].password).then(valid => {
+          if (!valid) {
+            return res.status(401).json({ error: 'Mot de passe incorrect !' });
+          } 
+
+          res.status(200).json({
+            userId: user[0].id,
+            token: jwt.sign(
+              { userId: user[0].id },
+              'RANDOM_TOKEN_SECRET',
+              { expiresIn: '24h' }
+            )
+          })
+        }).catch(error => res.status(500).json({ error }));
+
     })
+}
+
+//getProfil
+exports.getProfil = (req, res, next) => {
+    const id = req.params.id;
+
+    const string = "SELECT * FROM users WHERE id = ?";
+    const inserts = [id];
+    const sql = mysql.format(string, inserts);
+
+    const query = db.query(sql, (error, profile) => {
+
+
+        if (!error) {
+            res.status(200).json(profile);
+        } else {
+            return next(new HttpError("Utilisateur non trouvé", 404));
+        }
+    });
 }
 
 
 //update profil
 exports.updateProfil = (req, res, next) => {
-    const id = req.body.id
+    const id = req.params.id
     const age = req.body.age
     const department = req.body.department
-
-    const sqlUpdate = "UPDATE users SET age = ?, department = ? WHERE id = ?;";
-
-    db.query(sqlUpdate, [age, department, id], (err, result) => {
+    const profilimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+        
+    let sqlUpdate = "UPDATE users SET age = ?, department = ?, profilimage = ? WHERE id = ?;";
+    
+    let parameters = [age, department, profilimage, id]
+    
+    db.query(sqlUpdate, parameters, (err, result) => {
+        console.log('update profil')
         if (result) {
             res.send(result)
         } 
@@ -109,39 +157,26 @@ exports.updateProfil = (req, res, next) => {
     })
 }
 
+// exports.modifySauce = (req, res, next) =>  {
+//     const sauceObject = req.file ?
+//     { 
+//       ...JSON.parse(req.body.sauce),
+//       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+//     } : { ...req.body };
 
+//     Sauce.updateOne({ _id: req.params.id}, {... sauceObject, _id: req.params.id})
+//     .then(() => res.status(200).json({message: 'Objet modifié !'}))
+//     .catch(error => res.status(400).json({error}));
+//   };
 
-
-// app.get('/user/:id', (req, res) => {
-//     const id = req.params.id
-//     const sqlSelect = "SELECT * FROM users WHERE id = ?;"
-
-//     db.query(sqlSelect, [6], (err, result) => {
-//         res.send(result)
-//     })
-// })
-
-
-//     User.findOne({ email: req.body.email })
-//       .then(user => {
-//         if (!user) {
-//           return res.status(401).json({ error: 'Oups... Utilisateur non trouvé. Veuillez créer votre compte !' });
-//         }
-//         bcrypt.compare(req.body.password, user.password)
-//           .then(valid => {
-//             if (!valid) {
-//               return res.status(401).json({ error: 'Mot de passe incorrect !' });
-//             }
-//             res.status(200).json({
-//               userId: user._id,
-//               token: jwt.sign(
-//                 { userId: user._id },
-//                 'RANDOM_TOKEN_SECRET',
-//                 { expiresIn: '24h' }
-//               )
-//             });
-//           })
-//           .catch(error => res.status(500).json({ error }));
-//       })
-//       .catch(error => res.status(500).json({ error }));
+// exports.createSauce = (req, res, next) => {
+//     const sauceObject = JSON.parse(req.body.sauce);
+//     delete sauceObject._id;
+//     const sauce = new Sauce({
+//       ...sauceObject,
+//       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+//     });
+//    sauce.save()
+//    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+//    .catch(error => res.status(400).json({ error }));
 //   };

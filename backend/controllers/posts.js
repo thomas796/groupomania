@@ -1,3 +1,42 @@
+const mysql = require("mysql");
+// Database Route
+const db = require("../config_db");
+
+exports.addPost = (req, res, next) => {
+    
+    const id = req.params.id
+    const description = req.body.description
+    const postimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+        
+    const sqlInsert = "INSERT INTO posts (urlimage, description, userId) VALUES (?,?,?);"  
+    let parameters = [postimage, description, id]
+    
+    db.query(sqlInsert, parameters, (err, result) => {
+
+        if (result) {
+            res.send(result)
+        } 
+        if (err) {
+            res.send(err)
+        }
+    })
+}
+
+
+exports.getPost = (req, res, next) => {
+
+    const sqlSelect = "SELECT * FROM posts";
+
+    db.query(sqlSelect, (err, result) => {
+
+        if (result) {
+            res.send(result)
+        } 
+        if (err) {
+            res.send(err)
+        }
+    })
+}
 
 
 

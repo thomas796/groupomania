@@ -3,9 +3,11 @@ const express = require('express');
 const router = express.Router();
 
 const userCtrl = require('../controllers/user');
+const auth = require('../middleware/auth');
+const multer = require ('../middleware/multer-config');
 
 // Toutes les toutes des API
-router.put('/', userCtrl.updateProfil);
+router.put('/:id', auth, multer, userCtrl.updateProfil);
 
 module.exports = router;
 
