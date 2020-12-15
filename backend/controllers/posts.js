@@ -6,7 +6,10 @@ exports.addPost = (req, res, next) => {
     
     const id = req.params.id
     const description = req.body.description
-    const postimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+    let postimage = ""
+    if (req.file) {
+        postimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+    }
         
     const sqlInsert = "INSERT INTO posts (urlimage, description, userId) VALUES (?,?,?);"  
     let parameters = [postimage, description, id]
@@ -25,7 +28,8 @@ exports.addPost = (req, res, next) => {
 
 exports.getPost = (req, res, next) => {
 
-    const sqlSelect = "SELECT * FROM posts";
+    const sqlSelect = "SELECT * FROM posts INNER JOIN users ON posts.userId = users.id";
+
 
     db.query(sqlSelect, (err, result) => {
 

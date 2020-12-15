@@ -39,6 +39,7 @@ const register = require('./routes-user/register');
 const login = require('./routes-user/login');
 const updateProfil = require('./routes-user/updateProfil');
 const getProfil = require('./routes-user/getProfil');
+const deleteProfil = require('./routes-user/deleteProfil')
 
 // Gestion de la ressource image en statique
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -47,6 +48,7 @@ app.use('/register', register);
 app.use('/login', login);
 app.use('/updateProfil', updateProfil);
 app.use('/getProfil', getProfil);
+app.use('/deleteProfil', deleteProfil);
 
 const addPost = require('./routes-posts/addPost')
 const getPost = require('./routes-posts/getPost')

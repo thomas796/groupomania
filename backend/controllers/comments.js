@@ -26,9 +26,7 @@ exports.getComments = (req, res, next) => {
     console.log('one')
     const postId = req.params.postId
 
-    // const sqlSelect = "SELECT * FROM comments";
-
-    const sqlSelect = "SELECT * FROM comments WHERE postId like ?"
+    const sqlSelect = "SELECT * FROM comments INNER JOIN users ON comments.userId = users.id WHERE postId like ?"
 
     db.query(sqlSelect, [postId], (err, result) => {
         console.log('two')

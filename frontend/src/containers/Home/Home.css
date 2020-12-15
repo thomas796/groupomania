@@ -11,17 +11,71 @@
   }
 
   .post {
+    margin-top: 75px;
     margin-left: 240px;
     width: calc(100% - 240px);
   }
 
-  .profil {
+  .profilFalse {
     position: fixed;
-    left: 0%;
-    top: 0%;
-    height: 100%;
-    color: white;
+    left: 0px;
+    top: 75px;
+    height: calc(100% - 75px);
     width: 240px;
-    background-color:royalblue;
+    background-color:rgb(224, 221, 221);
+    z-index: 10;
   }
 
+  #topBar {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    height: 75px;
+    width: 100%;
+    background-color:rgb(177, 159, 159);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#logoHome {
+    width: 200px;
+    height: 35px;
+}
+
+#profilIcon {
+  display: none;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  position: absolute;
+  left: 20px;
+  top: 22px;
+}
+
+
+
+@media all and (max-width: 700px) {
+
+  .profilFalse {
+    left: -100%;
+    width: 100%;
+  }
+
+  .profilTrue {
+    left: 0%;
+    width: 100%;
+  }
+
+  .post {
+    margin-left: 10px;
+    width: calc(100% - 20px);
+  }
+
+  #profilIcon {
+    display: block;
+  }
+
+}

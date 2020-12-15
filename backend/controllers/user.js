@@ -1,4 +1,5 @@
 const mysql = require("mysql");
+const fs = require ('fs');
 
 // Database Route
 const db = require("../config_db");
@@ -84,6 +85,7 @@ exports.register = (req, res, next) => {
 exports.login = (req, res, next) => {
 
     const mail = req.body.mail
+    const password = req.body.password
 
     const sqlSelect = "SELECT * FROM users WHERE mail = ?";
 
@@ -140,43 +142,59 @@ exports.updateProfil = (req, res, next) => {
     const id = req.params.id
     const age = req.body.age
     const department = req.body.department
-    const profilimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+
+    if ((req.file) && (age !== '') && (department !== '')) {
+        console.log('two')
+
+        const profilimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
         
-    let sqlUpdate = "UPDATE users SET age = ?, department = ?, profilimage = ? WHERE id = ?;";
-    
-    let parameters = [age, department, profilimage, id]
-    
-    db.query(sqlUpdate, parameters, (err, result) => {
-        console.log('update profil')
-        if (result) {
-            res.send(result)
-        } 
-        if (err) {
-            res.send(err)
+        let sqlUpdate = "UPDATE users SET age = ?, department = ?, profilimage = ? WHERE id = ?;";
+        
+        let parameters = [age, department, profilimage, id]
+        
+        db.query(sqlUpdate, parameters, (err, result) => {
+
+            if (result) {
+                res.send(result)
+            } 
+            if (err) {
+                res.send(err)
+            }
+        })
+    } else {
+        console.log('four')
+        res.send('Votre profil est incomplet')
+    }
+
+}
+
+//delete profil 
+exports.deleteProfil = (req, res, next) => {
+    const id = req.params.id
+
+    let getUserImageUrl = "SELECT profilimage FROM users WHERE id = ?;";
+    db.query(getUserImageUrl, [id], (err, result) => {
+
+        const imageUrl = result[0].profilimage
+
+        if ((imageUrl !== '') && (imageUrl !== null)) {
+
+            const filename = imageUrl.split('/images/')[1];
+
+            fs.unlink(`images/${filename}`, () => {
+
+                let sqlDelete = "DELETE FROM users WHERE id = ?;";
+        
+                db.query(sqlDelete, [id], (err, result) => {
+
+                    if (result) {
+                        res.send(result)
+                    } 
+                    if (err) {
+                        res.send(err)
+                    }
+                })
+            })
         }
     })
 }
-
-// exports.modifySauce = (req, res, next) =>  {
-//     const sauceObject = req.file ?
-//     { 
-//       ...JSON.parse(req.body.sauce),
-//       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-//     } : { ...req.body };
-
-//     Sauce.updateOne({ _id: req.params.id}, {... sauceObject, _id: req.params.id})
-//     .then(() => res.status(200).json({message: 'Objet modifié !'}))
-//     .catch(error => res.status(400).json({error}));
-//   };
-
-// exports.createSauce = (req, res, next) => {
-//     const sauceObject = JSON.parse(req.body.sauce);
-//     delete sauceObject._id;
-//     const sauce = new Sauce({
-//       ...sauceObject,
-//       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-//     });
-//    sauce.save()
-//    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-//    .catch(error => res.status(400).json({ error }));
-//   };

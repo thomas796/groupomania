@@ -46,8 +46,6 @@ class Connexion extends Component {
                 //mets le token dans le local storage
                 let setTokenStringify = JSON.stringify([response.data.userId, response.data.token])
                 localStorage.setItem("token",setTokenStringify)
-            
-                //post faux en base de donéée dans la base de donéé et assure toi que la route pour récupérer les posts fonctionne.
 
                 this.setState({ goToHome: true })
             }

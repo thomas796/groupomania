@@ -1,6 +1,7 @@
 .postDiv {
     position: relative;
-    width: 400px;
+    max-width: 400px;
+    width: 100%;
     margin-top: 20px;
     height: 400px;
     background-color: rgb(247, 241, 241);
@@ -10,6 +11,29 @@
     align-items: center;
     justify-content: space-evenly;
     box-shadow: 2px 2px 2px 2px rgb(221, 207, 207);
+}
+
+
+.usernamePost {
+    font-size: 1rem;
+}
+
+.userPostContainer {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: flex-start;
+    align-items: center;
+    margin: 5px;
+}
+
+.imageUserPost {
+    height: 30px;
+    width: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .showAddCommentBtn {
@@ -30,43 +54,20 @@
     animation-name: slidein;
 }
 
-.theComment {
-    background-color: rgb(240, 235, 235);
-    width: 100%;
-    height: 30px;
-    line-height: 30px;
-    vertical-align: middle;
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
 
-@keyframes slidein {
-    from {
-      margin-left: 70%;
-      width: 30%;
-    }
-  
-    to {
-      margin-left: 0%;
-      width: 100%;
-      margin: 0px;
-      margin-top: 5px;
-    }
-  }
-
-
-.titlePost {
+.descriptionPost {
     height: 40px;
-    width: 100%;
-    text-align: center;
+    width: calc(100% - 20px);
+    text-align: left;
     line-height: 40px;
     vertical-align: middle;
     margin: 0px;
+    margin-left: 10px;
 }
 
 .imagePost {
     width: calc(100% - 40px);
-    height: calc(100% - 40px);
+    height: calc(100% - 120px);
     object-fit: contain;
 }
 
@@ -88,7 +89,7 @@
     background-color: white;
     position: fixed;
     left: 240px;
-    height: 90px;
+    height: 92px;
     top: calc(100% - 90px);
     width: calc(100% - 240px);
     box-shadow: 0px -2px 2px rgb(219, 219, 219);
@@ -119,14 +120,10 @@
 
 
 @media all and (max-width: 700px) {
-    .postDiv {
-        width: 280px;
-        height: 280px;
-    }
 
     #homeBottomBar {
-        height: 130px;
-        top: calc(100% - 130px);
+        left: 0px;
+        width: 100%;      
     }
 
     #addPostBtn {
@@ -139,9 +136,14 @@
     
   }
 
-@media all and (max-width: 550px) {
-    .postDiv {
-        width: 230px;
-        height: 230px;
-    }
+
+  @media all and (max-width: 400px) {
+
+  #homeBottomBar {
+    height: 132px;
+    top: calc(100% - 130px);
+    left: 0px;
+    width: 100%;      
+  }
+
 }

@@ -3,21 +3,51 @@ import { Redirect } from 'react-router-dom'
 import ProfilHome from '../../components/ProfilHome/ProfilHome'
 import PostHome from '../../components/PostHome/PostHome'
 import './Home.css';
+import Logo from '../../img/logo.png'
+import ProfilIcon from '../../img/anonyme.png'
+import Axios from 'axios'
 
 class Home extends Component {
 
   state = {
-    userprofil: '',
+    userProfil: {
+      username: '',
+      mail: '',
+      age: '',
+      department: '',
+      image_url: ''
+    },
     goToProfil: false,
+    showProfil: false
   }
 
   componentDidMount () {
+    let getTokenStringify = localStorage.getItem("token");
+    let getToken = JSON.parse(getTokenStringify);
 
-
+    Axios.get(`${process.env.REACT_APP_API_URL}/getProfil/${getToken[0]}`, { headers: {"Authorization" : `Bearer ${getToken[1]}`} }).then((response) => {
+            const res = response.data[0]
+            const user = this.state.userProfil
+            user.username = res.username
+            user.mail = res.mail
+            user.age = res.age
+            user.department = res.department
+            user.image_url = res.profilimage
+            this.setState({ userProfil: user })
+        })
   }
 
   handleGoToProfil = () => {
     this.setState({ goToProfil: true })
+  }
+
+
+  showProfil = () => {
+    console.log('showProfil ' + this.state.showProfil )
+
+    this.setState({ showProfil: !this.state.showProfil })
+
+
   }
 
 
@@ -27,13 +57,22 @@ class Home extends Component {
         return <Redirect push to={`/profil`} />
     }
 
+    let profil = "profilFalse"
+    if (this.state.showProfil) {
+      profil = "profilFalse profilTrue"
+    }
+
     return (
         <div id="conteneur">
-          <section className="profil">
-            <ProfilHome></ProfilHome>
+          <div id="topBar">
+            <img id="profilIcon" onClick={this.showProfil} src={ProfilIcon} alt='profilIcon' />
+            <img id="logoHome" src={Logo} alt='logo'/>
+          </div>
+          <section className={profil}>
+            <ProfilHome userProfil={this.state.userProfil}></ProfilHome>
           </section>
           <section className="post">
-            <PostHome></PostHome>
+            <PostHome userProfil={this.state.userProfil}></PostHome>
           </section>
         </div>
     )

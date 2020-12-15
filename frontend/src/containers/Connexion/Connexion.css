@@ -1,11 +1,12 @@
-#container {
-  margin: 0px;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0px;
-  top: 0px;
-}
+  #container {
+    margin: 0px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+  }
+
 .registration {
     display: flex;
     flex-direction: column;
@@ -19,7 +20,7 @@
   
   #login {
     height: 100px;
-    background-color: royalblue;
+    background-color: lightgray;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -33,11 +34,13 @@
   }
   
   button {
-    width: 180px;
-    background-color: rgb(48, 95, 235);
+    width: 160px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: royalblue;
     color: white;
-    border-radius: 5px;
     font-size: futura arial;
+    border: none;
   }
 
   #main {
@@ -65,9 +68,39 @@
     text-align: center;
   }
 
-  @media all and (max-width: 900px) {
+  @media all and (max-width: 880px) {
+    
+    #login {
+      height: 160px;
+    }
+
     #groupomania {
-        display: none;
-      }
+      top: 10px;
+    }
+
+
+  }
+
+  @media all and (max-width: 600px) {
+    #login {
+      height: 250px;
+      flex-direction: column;
+    }
+
+    #groupomania {
+      position: absolute;
+      left: calc(50% - 100px);
+      margin: 0px;
+      top: 32px;
+      width: 200px;
+      height: 36px;
+    }
+
+    .registration {
+      margin: 0px;
+      margin-top: 20px;
+      margin-right: calc(50% - 150px);
+    }
+
     
   }
