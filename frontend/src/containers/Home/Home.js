@@ -15,7 +15,8 @@ class Home extends Component {
       mail: '',
       age: '',
       department: '',
-      image_url: ''
+      image_url: '',
+      isadministrator: false
     },
     goToProfil: false,
     showProfil: false
@@ -33,6 +34,7 @@ class Home extends Component {
             user.age = res.age
             user.department = res.department
             user.image_url = res.profilimage
+            user.isadministrator = res.isadministrator
             this.setState({ userProfil: user })
         })
   }
@@ -46,10 +48,7 @@ class Home extends Component {
     console.log('showProfil ' + this.state.showProfil )
 
     this.setState({ showProfil: !this.state.showProfil })
-
-
   }
-
 
   render() {
 

@@ -40,6 +40,7 @@
     position: absolute;
     width: 50px;
     height: 25px;
+    font-size: 20px;
     border-radius: 3px;
     left: calc(100% - 65px);
     top: calc(100% - 40px);
@@ -117,13 +118,38 @@
       border-radius: 50%;
   }
 
+  #thumbContainer {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    height: 30px;
+  }
 
+  .thumb_up {
+    height: 20px;
+    width: 20px;
+    margin-left: 20px;
+  }
 
+  .thumb_down {
+    height: 20px;
+    width: 20px;
+    transform: rotate(180deg);
+    margin-left: 20px;
+}
+
+.trash {
+    height: 20px;
+    width: 20px;
+    opacity: 0.8;
+    position: absolute;
+    left: calc(100% - 30px);
+}
 @media all and (max-width: 700px) {
 
     #homeBottomBar {
         left: 0px;
-        width: 100%;      
+        width: 100%;
     }
 
     #addPostBtn {

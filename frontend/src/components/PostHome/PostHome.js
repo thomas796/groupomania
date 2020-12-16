@@ -4,6 +4,12 @@ import Axios from 'axios'
 import PostComment from './PostComment';
 import Anonyme from '../../img/anonyme.png'
 import DefaultPost from '../../img/defaultPost.png'
+import grayThumb from '../../img/thumb_gray.png'
+import blueThumb from '../../img/thumb_blue.png'
+import redThumb from '../../img/thumb_red.png'
+import Trash from '../../img/trash.png'
+
+
 
 class PostHome extends Component {
 
@@ -26,6 +32,7 @@ updatePost () {
   let getToken = JSON.parse(getTokenStringify);
 
   Axios.get(`${process.env.REACT_APP_API_URL}/getPost`, { headers: {"Authorization" : `Bearer ${getToken[1]}`} }).then((response) => {
+    console.log(response)
 
       let postArray = response.data.reverse()
       this.setState({ postArray })
@@ -133,7 +140,24 @@ defaultPostImageSrc(ev){
   ev.target.src = DefaultPost
 }
 
+deletePost = (post) => {
+
+  let getTokenStringify = localStorage.getItem("token");
+  let getToken = JSON.parse(getTokenStringify);
+
+  console.log(getToken[0] + ' ' + post)
+
+  Axios.delete(`${process.env.REACT_APP_API_URL}/deletePost/${getToken[0]}/${post}`,
+  { headers: {"Authorization" : `Bearer ${getToken[1]}`}}).then((response) => {
+     console.log(response)
+  })
+
+
+}
+
  render() {
+
+    const user = this.props.userProfil
 
     let addPost = []
     
@@ -156,10 +180,15 @@ defaultPostImageSrc(ev){
       }
 
       let heightDiv;
-      if ((post.urlimage === '') || (post.urlimage === null)) {
+      if (post.urlimage.length < 1) {
         heightDiv = {
           height: '120px'
         }
+      }
+
+      let administratorBtn = []
+      if (user.isadministrator) {
+        administratorBtn.push(<img key={'trash'+post.idposts} onClick={() => this.deletePost(post.idposts)} className='trash' src={Trash} alt="trash" />)
       }
 
       addPost.push(
@@ -170,9 +199,14 @@ defaultPostImageSrc(ev){
                   <h3 className='usernamePost'>
                       publication de {post.username}
                   </h3>
+                  {administratorBtn}
               </div>
             <p className="descriptionPost">{post.description}</p>
             <img onError={this.defaultPostImageSrc} className="imagePost" src={post.urlimage} alt={`post ${postIndex}`} />
+            <div id="thumbContainer">
+                <img className="thumb_up" src={grayThumb} alt='thumb_up' />
+                <img className="thumb_down" src={grayThumb} alt='thumb_down' />
+            </div>
             <button 
               onClick={() => this.handleShowComment(post.idposts)} 
               className="showAddCommentBtn">

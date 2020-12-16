@@ -52,11 +52,15 @@ app.use('/deleteProfil', deleteProfil);
 
 const addPost = require('./routes-posts/addPost')
 const getPost = require('./routes-posts/getPost')
-const addComment = require('./routes-comments/addComment')
-const getComments = require('./routes-comments/getComments')
+const deletePost = require('./routes-posts/deletePost')
 
 app.use('/addPost', addPost);
 app.use('/getPost', getPost);
+app.use('/deletePost', deletePost);
+
+const addComment = require('./routes-comments/addComment')
+const getComments = require('./routes-comments/getComments')
+
 app.use('/addComment', addComment);
 app.use('/getComments', getComments);
 

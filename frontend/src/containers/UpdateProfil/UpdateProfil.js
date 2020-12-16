@@ -109,7 +109,7 @@ class UpdateProfil extends Component {
         <div className="conteneur">
             <button id='backToHome' onClick={this.backToHome}></button>
             <h2 className='title'>Profil de {this.state.username}</h2>
-            <p lassName="inputProfil">Age :</p>
+            <p className="inputProfil">Age :</p>
             <input type="text" className="inputProfil" value={this.state.age} placeholder="33" onChange={this.handleAge} />
             <p className="inputProfil">Service :</p>
             <input className="inputProfil" type="text" value={this.state.department} placeholder="RH" onChange={this.handleDepartment} />
