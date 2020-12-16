@@ -53,10 +53,14 @@ app.use('/deleteProfil', deleteProfil);
 const addPost = require('./routes-posts/addPost')
 const getPost = require('./routes-posts/getPost')
 const deletePost = require('./routes-posts/deletePost')
+const likes = require('./routes-posts/likes')
+const getLikes = require('./routes-posts/getLikes')
 
 app.use('/addPost', addPost);
 app.use('/getPost', getPost);
 app.use('/deletePost', deletePost);
+app.use('/likes', likes);
+app.use('/getLikes', getLikes);
 
 const addComment = require('./routes-comments/addComment')
 const getComments = require('./routes-comments/getComments')

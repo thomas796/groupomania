@@ -7,7 +7,7 @@ const auth = require('../middleware/auth');
 const multer = require ('../middleware/multer-config');
 
 // Toutes les toutes des API
-router.put('/:id', auth, multer, userCtrl.updateProfil);
+router.put('/', auth, multer, userCtrl.updateProfil);
 
 module.exports = router;
 

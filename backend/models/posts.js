@@ -6,15 +6,8 @@ exports.addPost = (parameters) => {
 
     const sqlInsert = "INSERT INTO posts (urlimage, description, userId) VALUES (?,?,?);"  
     
-    db.query(sqlInsert, parameters, (err, result) => {
+    return db.query(sqlInsert, parameters, (err, result)) 
 
-        if (result) {
-            return result
-        } 
-        if (err) {
-            return err
-        }
-    })
 }
 
 exports.getPost = () => {

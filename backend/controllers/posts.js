@@ -1,41 +1,10 @@
 
-// const database = require("../models/posts")
-
-// exports.addPost = (req, res, next) => {
-    
-//     const id = req.params.id
-//     const description = req.body.description
-//     let postimage = ""
-//     if (req.file) {
-//         postimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
-//     }
-    
-//     let parameters = [postimage, description, id]
-//     res.send(database.addPost(parameters))
-//     console.log(res)
-// }
-
-
-// exports.getPost = (req, res, next) => {
-//     console.log(database.getPost())
-//     res.send(database.getPost())
-// }
-
-// exports.deletePost = (req, res, next) => {
-//     // const id = req.params.id
-//     const post = req.params.post
-//     res.send(database.deletePost(post)) 
-// }
-
-
-
-
 const mysql = require("mysql");
 const db = require("../config_db");
 
 exports.addPost = (req, res, next) => {
     
-    const id = req.params.id
+    const id = req.userId
     const description = req.body.description
     let postimage = ""
     if (req.file) {
@@ -59,8 +28,8 @@ exports.addPost = (req, res, next) => {
 
 exports.getPost = (req, res, next) => {
 
-    const sqlSelect = "SELECT * FROM posts INNER JOIN users ON posts.userId = users.id";
-    
+    const sqlSelect = "SELECT * FROM posts INNER JOIN users ON posts.userId = users.id ORDER BY posts.idposts ASC";
+
     db.query(sqlSelect, (err, result) => {
 
         if (result) {
@@ -72,10 +41,7 @@ exports.getPost = (req, res, next) => {
     })
 }
 
-
 exports.deletePost = (req, res, next) => {
-
-    const id = req.params.id
     const post = req.params.post
 
     const sqlDelete = "DELETE FROM posts WHERE idposts = ?;";
@@ -88,7 +54,94 @@ exports.deletePost = (req, res, next) => {
         if (err) {
             res.send(err)
         }
-    
+    })
+}
+
+
+exports.likes = (req, res, next) => {
+
+    const id = req.userId
+    const post = req.body.post
+    const thumb = req.body.thumb
+
+    const sqlSelect = "SELECT * FROM likes WHERE userId = ? AND postId = ?";
+
+    db.query(sqlSelect, [id, post], (err, result) => {
+
+        if (result) {
+
+            let likeup = 0
+            let likedown = 0
+            if (thumb === 'up') {
+                likeup = 1
+            } else {
+                likedown = 1
+            }
+  
+            if (result.length === 0) {
+                //on créé la row
+                const sqlInsert = "INSERT INTO likes (userId, postId, likeup, likedown) VALUES (?,?,?,?);"
+
+                db.query(sqlInsert, [id, post, likeup, likedown], (err, result) => {
+                    if (result) {
+                        res.send(result)
+                    }
+                    if (err) {
+                        res.send(err)
+                    }
+                })
+            } else {
+
+                const currentLikeup = result[0].likeup
+                const currentLikedown = result[0].likedown
+
+                //on delete la row
+                if (((likeup === 1) && (currentLikeup === 1)) || ((likedown === 1) && (currentLikedown === 1))) {
+
+                    let sqlDelete = "DELETE FROM likes WHERE userId = ? AND postId = ?;";
+                
+                    db.query(sqlDelete, [id, post], (err, result) => {
+
+                        if (result) {
+                            res.send(result)
+                        }
+                        if (err) {
+                            res.send(err)
+                        }
+                    })
+
+                // on update la row
+                } else {
+                    let sqlUpdate = "UPDATE likes SET likeup = ?, likedown = ? WHERE userId = ? AND postId = ?;";
+                    db.query(sqlUpdate, [likeup, likedown, id, post], (err, result) => {
+                        if (result) {
+                            res.send(result)
+                        }
+                        if (err) {
+                            res.send(err)
+                        }
+                    })
+                }
+            }
+        } 
+        if (err) {
+            res.send(err)
+        }
+    })
+}
+
+exports.getLikes = (req, res, next) => {
+
+    const id = req.userId
+    let sqlSelect = "SELECT * FROM likes WHERE userId = ?";
+
+    db.query(sqlSelect, [id], (err, result) => {
+        if (result) {
+            res.send(result)
+        }
+        if (err) {
+            res.send(err)
+        }
     })
 
 }

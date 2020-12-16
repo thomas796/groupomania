@@ -5,7 +5,7 @@ const postCtrl = require('../controllers/comments');
 const auth = require('../middleware/auth');
 
 // Toutes les toutes des API
-router.post('/:id', auth, postCtrl.addComment);
+router.post('/', auth, postCtrl.addComment);
 
 module.exports = router;
 

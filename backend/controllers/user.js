@@ -105,7 +105,7 @@ exports.login = (req, res, next) => {
           } 
 
           res.status(200).json({
-            userId: user[0].id,
+            // userId: user[0].id,
             token: jwt.sign(
               { userId: user[0].id },
               'RANDOM_TOKEN_SECRET',
@@ -119,7 +119,7 @@ exports.login = (req, res, next) => {
 
 //getProfil
 exports.getProfil = (req, res, next) => {
-    const id = req.params.id;
+    const id = req.userId;
 
     const string = "SELECT * FROM users WHERE id = ?";
     const inserts = [id];
@@ -139,12 +139,11 @@ exports.getProfil = (req, res, next) => {
 
 //update profil
 exports.updateProfil = (req, res, next) => {
-    const id = req.params.id
+    const id = req.userId
     const age = req.body.age
     const department = req.body.department
 
     if ((req.file) && (age !== '') && (department !== '')) {
-        console.log('two')
 
         const profilimage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
         
@@ -162,31 +161,41 @@ exports.updateProfil = (req, res, next) => {
             }
         })
     } else {
-        console.log('four')
         res.send('Votre profil est incomplet')
     }
-
 }
 
-//delete profil 
+//delete profil
 exports.deleteProfil = (req, res, next) => {
-    const id = req.params.id
+    const id = req.userId
 
     let getUserImageUrl = "SELECT profilimage FROM users WHERE id = ?;";
+    
     db.query(getUserImageUrl, [id], (err, result) => {
-
-        const imageUrl = result[0].profilimage
-
-        if ((imageUrl !== '') && (imageUrl !== null)) {
-
-            const filename = imageUrl.split('/images/')[1];
-
-            fs.unlink(`images/${filename}`, () => {
-
-                let sqlDelete = "DELETE FROM users WHERE id = ?;";
         
-                db.query(sqlDelete, [id], (err, result) => {
+        if (result) {
+            const imageUrl = result[0].profilimage
+            const sqlDelete = "DELETE FROM users WHERE id = ?;";
 
+            if ((imageUrl !== '') && (imageUrl !== null)) {
+    
+                const filename = imageUrl.split('/images/')[1];   
+    
+                fs.unlink(`images/${filename}`, () => {
+    
+                    db.query(sqlDelete, [id], (err, result) => {
+    
+                        if (result) {
+                            res.send(result)
+                        } 
+                        if (err) {
+                            res.send(err)
+                        }
+                    })
+                })
+            } else {
+                db.query(sqlDelete, [id], (err, result) => {
+    
                     if (result) {
                         res.send(result)
                     } 
@@ -194,7 +203,10 @@ exports.deleteProfil = (req, res, next) => {
                         res.send(err)
                     }
                 })
-            })
+            }
+
+
         }
+
     })
 }

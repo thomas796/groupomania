@@ -42,9 +42,8 @@ class Connexion extends Component {
                 this.setState({ loginStatus })
             } else {
 
-                console.log(response)
                 //mets le token dans le local storage
-                let setTokenStringify = JSON.stringify([response.data.userId, response.data.token])
+                let setTokenStringify = JSON.stringify([response.data.token])
                 localStorage.setItem("token",setTokenStringify)
 
                 this.setState({ goToHome: true })

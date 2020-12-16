@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom'
 import ProfilHome from '../../components/ProfilHome/ProfilHome'
 import PostHome from '../../components/PostHome/PostHome'
 import './Home.css';
-import Logo from '../../img/logo.png'
+import Logo from '../../img/mainLogo.png'
 import ProfilIcon from '../../img/anonyme.png'
 import Axios from 'axios'
 
@@ -26,7 +26,7 @@ class Home extends Component {
     let getTokenStringify = localStorage.getItem("token");
     let getToken = JSON.parse(getTokenStringify);
 
-    Axios.get(`${process.env.REACT_APP_API_URL}/getProfil/${getToken[0]}`, { headers: {"Authorization" : `Bearer ${getToken[1]}`} }).then((response) => {
+    Axios.get(`${process.env.REACT_APP_API_URL}/getProfil`, { headers: {"Authorization" : `Bearer ${getToken[0]}`} }).then((response) => {
             const res = response.data[0]
             const user = this.state.userProfil
             user.username = res.username
@@ -45,8 +45,6 @@ class Home extends Component {
 
 
   showProfil = () => {
-    console.log('showProfil ' + this.state.showProfil )
-
     this.setState({ showProfil: !this.state.showProfil })
   }
 

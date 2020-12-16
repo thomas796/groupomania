@@ -19,7 +19,8 @@ class PostHome extends Component {
     postArray: [],
     showCommentIdPost: -1,
     comments: [],
-    inputCommentValue: ''
+    inputCommentValue: '',
+    likes: []
 }
 
 componentDidMount () {
@@ -31,14 +32,26 @@ updatePost () {
   let getTokenStringify = localStorage.getItem("token");
   let getToken = JSON.parse(getTokenStringify);
 
-  Axios.get(`${process.env.REACT_APP_API_URL}/getPost`, { headers: {"Authorization" : `Bearer ${getToken[1]}`} }).then((response) => {
-    console.log(response)
+  Axios.get(`${process.env.REACT_APP_API_URL}/getPost`, { headers: {"Authorization" : `Bearer ${getToken[0]}`} }).then((response) => {
 
       let postArray = response.data.reverse()
       this.setState({ postArray })
 
   })
+
+  this.updateLikes()
+
 }
+
+updateLikes () {
+  let getTokenStringify = localStorage.getItem("token");
+  let getToken = JSON.parse(getTokenStringify);
+
+  Axios.get(`${process.env.REACT_APP_API_URL}/getLikes`, { headers: {"Authorization" : `Bearer ${getToken[0]}`} }).then((response) => {
+    this.setState({ likes: response.data })
+  })
+}
+
 
 addPost = () => {
 
@@ -51,16 +64,13 @@ addPost = () => {
   }
     formData.append("description", this.state.description);
 
-
-
-  Axios.post(`${process.env.REACT_APP_API_URL}/addPost/${getToken[0]}`, formData, { headers: {"Authorization" : `Bearer ${getToken[1]}`} }).then(() => {
+  Axios.post(`${process.env.REACT_APP_API_URL}/addPost`, formData, { headers: {"Authorization" : `Bearer ${getToken[0]}`} }).then(() => {
           this.updatePost()
           this.setState({ 
             description: '',
             selectedFile: null
           })
     })
-
 }
 
 
@@ -95,7 +105,7 @@ getComment = (postId) => {
     let getTokenStringify = localStorage.getItem("token");
     let getToken = JSON.parse(getTokenStringify);
 
-    Axios.get(`${process.env.REACT_APP_API_URL}/getComments/${postId}`, { headers: {"Authorization" : `Bearer ${getToken[1]}`} }).then((response) => {
+    Axios.get(`${process.env.REACT_APP_API_URL}/getComments/${postId}`, { headers: {"Authorization" : `Bearer ${getToken[0]}`} }).then((response) => {
         this.setState({ comments: response.data })
     })
 
@@ -112,10 +122,10 @@ addCommentPress = (e, idposts, userProfil) => {
       let getTokenStringify = localStorage.getItem("token");
       let getToken = JSON.parse(getTokenStringify);
 
-      Axios.post(`${process.env.REACT_APP_API_URL}/addComment/${getToken[0]}`, {
+      Axios.post(`${process.env.REACT_APP_API_URL}/addComment`, {
           postId: idposts+'',
           comment: e.target.value+''
-      }, { headers: {"Authorization" : `Bearer ${getToken[1]}`} }).then((response) => {
+      }, { headers: {"Authorization" : `Bearer ${getToken[0]}`} }).then(() => {
           
           let comments = this.state.comments
           comments.push({
@@ -141,17 +151,26 @@ defaultPostImageSrc(ev){
 }
 
 deletePost = (post) => {
+  let getTokenStringify = localStorage.getItem("token");
+  let getToken = JSON.parse(getTokenStringify);
+
+  Axios.delete(`${process.env.REACT_APP_API_URL}/deletePost/${post}`,
+  { headers: {"Authorization" : `Bearer ${getToken[0]}`}}).then((response) => {
+      this.updatePost() 
+  })
+}
+
+thumb = (thumb, idposts) => {
 
   let getTokenStringify = localStorage.getItem("token");
   let getToken = JSON.parse(getTokenStringify);
 
-  console.log(getToken[0] + ' ' + post)
-
-  Axios.delete(`${process.env.REACT_APP_API_URL}/deletePost/${getToken[0]}/${post}`,
-  { headers: {"Authorization" : `Bearer ${getToken[1]}`}}).then((response) => {
-     console.log(response)
+  Axios.put(`${process.env.REACT_APP_API_URL}/likes`, {
+    thumb: thumb,
+    post: idposts
+  }, { headers: {"Authorization" : `Bearer ${getToken[0]}`}}).then((response) => {
+      this.updateLikes() 
   })
-
 
 }
 
@@ -191,6 +210,19 @@ deletePost = (post) => {
         administratorBtn.push(<img key={'trash'+post.idposts} onClick={() => this.deletePost(post.idposts)} className='trash' src={Trash} alt="trash" />)
       }
 
+      let thumbUp = grayThumb
+      let thumbDown = grayThumb
+      this.state.likes.forEach(like => {
+        if (like.postId === post.idposts) {
+          if (like.likeup === 1) {
+            thumbUp = blueThumb
+          } else {
+            thumbDown = redThumb
+          }
+        } 
+      })
+
+
       addPost.push(
         <div key={'post' + post.idposts}>
           <div className="postDiv" style={heightDiv}>
@@ -202,10 +234,10 @@ deletePost = (post) => {
                   {administratorBtn}
               </div>
             <p className="descriptionPost">{post.description}</p>
-            <img onError={this.defaultPostImageSrc} className="imagePost" src={post.urlimage} alt={`post ${postIndex}`} />
+            <img onError={this.defaultPostImageSrc} className="imagePost" src={post.urlimage} alt={`post ${post.idposts}`} />
             <div id="thumbContainer">
-                <img className="thumb_up" src={grayThumb} alt='thumb_up' />
-                <img className="thumb_down" src={grayThumb} alt='thumb_down' />
+                <img onClick={() => this.thumb('up', post.idposts)} className="thumb_up" src={thumbUp} alt='thumb_up' />
+                <img onClick={() => this.thumb('down', post.idposts)} className="thumb_down" src={thumbDown} alt='thumb_down' />
             </div>
             <button 
               onClick={() => this.handleShowComment(post.idposts)} 

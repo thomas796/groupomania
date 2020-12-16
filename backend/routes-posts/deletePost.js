@@ -3,9 +3,10 @@ const router = express.Router();
 
 const postCtrl = require('../controllers/posts');
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 // Toutes les toutes des API
-router.delete('/:id/:post', auth, postCtrl.deletePost);
+router.delete('/:post', auth, admin, postCtrl.deletePost);
 
 module.exports = router;
 

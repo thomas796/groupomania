@@ -4,7 +4,7 @@ const db = require("../config_db");
 
 exports.addComment = (req, res, next) => {
 
-    const userId = req.params.id
+    const userId = req.userId
     const postId = req.body.postId
     const comment = req.body.comment
 

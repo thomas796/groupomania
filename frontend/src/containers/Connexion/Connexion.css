@@ -20,7 +20,7 @@
   
   #login {
     height: 100px;
-    background-color: lightgray;
+    background-color: #ED3833;
     display: flex;
     flex-direction: row;
     align-items: center;
